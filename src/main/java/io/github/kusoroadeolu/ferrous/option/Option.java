@@ -1,5 +1,6 @@
 package io.github.kusoroadeolu.ferrous.option;
 
+import io.github.kusoroadeolu.ferrous.throwing.ThrowingSupplier;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -21,10 +22,18 @@ public sealed interface Option<T> permits None, Some {
     /**
      * Wraps a potentially null value. Returns Some if non-null, None if null.
      */
-    static @NonNull <T> Option<T> ofNullable(@NonNull T value) {
-        return new None<>();
+    static @NonNull <T> Option<T> ofNullable(@Nullable T value) {
+        if (value == null) return new None<>();
+        else return new Some<>(value);
     }
 
+    static @NonNull <T> Option<T> of(@NonNull ThrowingSupplier<T> supplier) {
+        try {
+            return ofNullable(supplier.get());
+        }catch (Exception e){
+            return new None<>();
+        }
+    }
     // Query methods
     
     /** Returns true if Some, false if None */

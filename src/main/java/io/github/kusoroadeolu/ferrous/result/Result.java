@@ -3,6 +3,7 @@ package io.github.kusoroadeolu.ferrous.result;
 import io.github.kusoroadeolu.ferrous.option.Option;
 import io.github.kusoroadeolu.ferrous.throwing.ThrowingFunction;
 import io.github.kusoroadeolu.ferrous.throwing.ThrowingRunnable;
+import io.github.kusoroadeolu.ferrous.throwing.ThrowingSupplier;
 import org.jspecify.annotations.NonNull;
 
 import java.util.function.Function;
