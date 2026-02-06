@@ -71,15 +71,6 @@ record None<T>() implements Option<T> {
         return supplier.get();
     }
 
-    @Override
-    public <R> R ifSomeOrElse(Function<T, R> someFn, Supplier<R> noneFn) {
-        return noneFn.get();
-    }
-
-    @Override
-    public void ifSomeOrElse(Consumer<T> someFn, Runnable noneFn) {
-        noneFn.run();
-    }
 
     @Override
     public T toNullable() {

@@ -123,14 +123,6 @@ public sealed interface Result<T, E> permits Ok, Err {
     @NonNull
     Result<T, E> orElse(@NonNull Supplier<Result<T, E>> supplier);
 
-    // Pattern matching
-
-    /**
-     * Applies okFn if Ok, errFn if Err, and returns the result.
-     * Forces you to handle both cases explicitly.
-     */
-    @NonNull
-    <R> R match(@NonNull Function<T, R> okFn, Function<E, R> errFn);
 
     @NonNull Option<T> ok();
     @NonNull Option<E> err();

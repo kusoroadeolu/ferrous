@@ -1,5 +1,6 @@
 package io.github.kusoroadeolu.ferrous.option;
 
+import io.github.kusoroadeolu.ferrous.throwing.ThrowingFunction;
 import io.github.kusoroadeolu.ferrous.throwing.ThrowingSupplier;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -30,6 +31,14 @@ public sealed interface Option<T> permits None, Some {
     static @NonNull <T> Option<T> of(@NonNull ThrowingSupplier<T> supplier) {
         try {
             return ofNullable(supplier.get());
+        }catch (Exception e){
+            return new None<>();
+        }
+    }
+
+    static @NonNull <E, T> Option<T> of(@NonNull ThrowingFunction<E, T> action, @NonNull E value) {
+        try {
+            return ofNullable(action.apply(value));
         }catch (Exception e){
             return new None<>();
         }
@@ -125,19 +134,6 @@ public sealed interface Option<T> permits None, Some {
     @NonNull
     Option<T> orElse(@NonNull Supplier<Option<T>> supplier);
 
-    // Pattern matching
-
-    /**
-     * Applies someFn if Some, noneFn if None, and returns the result.
-     * Forces you to handle both cases explicitly.
-     */
-    @NonNull
-    <R> R ifSomeOrElse(@NonNull Function<T, R> someFn, @NonNull Supplier<R> noneFn);
-
-    /**
-     * Executes someFn if Some, noneFn if None. For side effects only.
-     */
-    void ifSomeOrElse(Consumer<T> someFn, Runnable noneFn);
 
     
     // Conversion

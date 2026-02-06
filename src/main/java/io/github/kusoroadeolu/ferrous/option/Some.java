@@ -73,16 +73,6 @@ record Some<T>(T value) implements Option<T> {
     }
 
     @Override
-    public <R> R ifSomeOrElse(Function<T, R> someFn, Supplier<R> noneFn) {
-        return someFn.apply(value);
-    }
-
-    @Override
-    public void ifSomeOrElse(Consumer<T> someFn, Runnable noneFn) {
-        someFn.accept(value);
-    }
-
-    @Override
     public T toNullable() {
         return value;
     }

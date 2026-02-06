@@ -82,10 +82,6 @@ record Ok<T, E>(@NonNull T value) implements Result<T, E> {
         return this;
     }
 
-    @Override
-    public <R> R match(Function<T, R> okFn, Function<E, R> errFn) {
-        return okFn.apply(value);
-    }
 
     @Override
     public @NonNull Option<T> ok() {

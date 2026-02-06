@@ -83,11 +83,6 @@ record Err<T, E>(@NonNull E error) implements Result<T, E> {
     }
 
     @Override
-    public <R> R match(Function<T, R> okFn, Function<E, R> errFn) {
-        return errFn.apply(error);
-    }
-
-    @Override
     public @NonNull Option<T> ok() {
         return Option.none();
     }
