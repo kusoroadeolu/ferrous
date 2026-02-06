@@ -1,11 +1,16 @@
 package io.github.kusoroadeolu.ferrous.option;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import io.github.kusoroadeolu.ferrous.result.Err;
+import io.github.kusoroadeolu.ferrous.result.Ok;
+import io.github.kusoroadeolu.ferrous.result.Result;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-record None<T>() implements Option<T> {
+import java.util.Optional;
+import java.util.function.*;
+import java.util.stream.Stream;
+
+public record None<T>() implements Option<T> {
     @Override
     public boolean isSome() {
         return false;
@@ -17,63 +22,129 @@ record None<T>() implements Option<T> {
     }
 
     @Override
-    public T unwrap() {
+    public @NonNull T unwrap() {
         throw new OptionException("unwrap called on 'none' type");
     }
 
     @Override
-    public T unwrapOr(T defaultValue) {
-        return defaultValue;
+    public @NonNull T unwrapOr(@NonNull T fallback) {
+        return fallback;
     }
 
     @Override
-    public T unwrapOrElse(Supplier<T> supplier) {
+    public @NonNull T unwrapOrElse(@NonNull Supplier<T> supplier) {
         return supplier.get();
     }
 
     @Override
-    public T expect(String message) {
+    public @NonNull T expect(@NonNull String message) {
         throw new OptionException(message);
     }
 
     @Override
-    public <U> Option<U> map(Function<T, U> fn) {
+    public @NonNull <U> Option<U> map(@NonNull Function<T, U> fn) {
         return new None<>();
     }
 
     @Override
-    public <U> Option<U> flatMap(Function<T, Option<U>> fn) {
+    public @NonNull <U> Option<U> flatMap(@NonNull Function<T, Option<U>> fn) {
         return new None<>();
     }
 
     @Override
-    public Option<T> filter(Predicate<T> predicate) {
+    public @NonNull Option<T> filter(@NonNull Predicate<T> predicate) {
         return new None<>();
     }
 
     @Override
-    public <U> Option<U> and(Option<U> other) {
+    public @NonNull <U> Option<U> and(@NonNull Option<U> other) {
         return other;
     }
 
     @Override
-    public <U> Option<U> andThen(Function<T, Option<U>> fn) {
+    public @NonNull <U> Option<U> andThen(@NonNull Function<T, Option<U>> fn) {
         return new None<>();
     }
 
     @Override
-    public Option<T> or(Option<T> other) {
+    public @NonNull Option<T> or(@NonNull Option<T> other) {
         return other;
     }
 
     @Override
-    public Option<T> orElse(Supplier<Option<T>> supplier) {
-        return supplier.get();
+    public @NonNull Option<T> orElse(@NonNull Supplier<Option<T>> supplier) {
+        var val = supplier.get();
+        return val == null ? new None<>() : val;
     }
 
 
     @Override
-    public T toNullable() {
+    public @Nullable T toNullable() {
         return null;
+    }
+
+    @Override
+    public boolean contains(@NonNull T value) {
+        return false;
+    }
+
+    @Override
+    public @NonNull Option<T> inspect(@NonNull Consumer<T> consumer) {
+        return new None<>();
+    }
+
+    @Override
+    public @NonNull <U> Option<U> flatten() {
+        return new None<>();
+    }
+
+    @Override
+    public @NonNull <U> Option<Pair<T, U>> zip(@NonNull Option<U> other) {
+        return new None<>();
+    }
+
+    @Override
+    public @NonNull <U, R> Option<R> zipWith(@NonNull Option<U> other, @NonNull BiFunction<T, U, R> fn) {
+        return new None<>();
+    }
+
+    @Override
+    public @NonNull <E> Result<T, E> okOr(@NonNull E error) {
+        return new Err<>(error);
+    }
+
+    @Override
+    public @NonNull <E> Result<T, E> okOrElse(@NonNull Supplier<E> supplier) {
+        return okOr(supplier.get());
+    }
+
+    @Override
+    public @NonNull <U, E> Result<Option<U>, E> transpose() {
+        return new Ok<>(new None<>());
+    }
+
+    @Override
+    public @NonNull Option<T> xor(@NonNull Option<T> other) {
+        return new None<>();
+    }
+
+    @Override
+    public void ifSome(@NonNull Consumer<T> consumer) {
+
+    }
+
+    @Override
+    public void ifNone(@NonNull Runnable runnable) {
+        runnable.run();
+    }
+
+    @Override
+    public @NonNull Stream<T> stream() {
+        return Stream.empty();
+    }
+
+    @Override
+    public @NonNull Optional<T> toOptional() {
+        return Optional.empty();
     }
 }

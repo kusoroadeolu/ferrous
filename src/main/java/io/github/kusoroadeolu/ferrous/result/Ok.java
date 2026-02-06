@@ -1,12 +1,19 @@
 package io.github.kusoroadeolu.ferrous.result;
 
+import io.github.kusoroadeolu.ferrous.option.None;
 import io.github.kusoroadeolu.ferrous.option.Option;
+import io.github.kusoroadeolu.ferrous.option.Pair;
+import io.github.kusoroadeolu.ferrous.option.Some;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
-record Ok<T, E>(@NonNull T value) implements Result<T, E> {
+public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
     @Override
     public boolean isOk() {
         return true;
@@ -18,78 +25,157 @@ record Ok<T, E>(@NonNull T value) implements Result<T, E> {
     }
 
     @Override
-    public T unwrap() {
+    public @NonNull T unwrap() {
         return value;
     }
 
     @Override
-    public E unwrapErr() {
+    public @NonNull E unwrapErr() {
         throw new ResultException("'unwrapErr' called on type 'ok'");
     }
 
     @Override
-    public T unwrapOr(T defaultValue) {
+    public @NonNull T unwrapOr(@NonNull T defaultValue) {
         return value;
     }
 
     @Override
-    public T unwrapOrElse(Supplier<T> supplier) {
+    public @NonNull T unwrapOrElse(@NonNull Supplier<T> supplier) {
         return value;
     }
 
     @Override
-    public T expect(String message) {
+    public @NonNull T expect(@NonNull String message) {
         return value;
     }
 
     @Override
-    public E expectErr(String message) {
+    public @NonNull E expectErr(@NonNull String message) {
         throw new ResultException(message);
     }
 
     @Override
-    public <U> Result<U, E> map(@NonNull Function<T, U> fn) {
+    public @NonNull <U> Result<U, E> map(@NonNull Function<T, U> fn) {
         return new Ok<>(fn.apply(value));
     }
 
     @Override
-    public <F> Result<T, F> mapErr(Function<E, F> fn) {
+    public @NonNull <F> Result<T, F> mapErr(@NonNull Function<E, F> fn) {
         return new Ok<>(value);
     }
 
     @Override
-    public <U> Result<U, E> flatMap(Function<T, Result<U, E>> fn) {
+    public @NonNull <U> Result<U, E> flatMap(@NonNull Function<T, Result<U, E>> fn) {
         return fn.apply(value);
     }
 
     @Override
-    public <U> Result<U, E> and(Result<U, E> other) {
+    public @NonNull <U> Result<U, E> and(@NonNull Result<U, E> other) {
         return other;
     }
 
     @Override
-    public <U> Result<U, E> andThen(Function<T, Result<U, E>> fn) {
+    public @NonNull <U> Result<U, E> andThen(@NonNull Function<T, Result<U, E>> fn) {
         return this.flatMap(fn);
     }
 
     @Override
-    public Result<T, E> or(Result<T, E> other) {
-        return this;
+    public @NonNull Result<T, E> or(@NonNull Result<T, E> other) {
+        return new Ok<>(value);
     }
 
     @Override
-    public Result<T, E> orElse(Supplier<Result<T, E>> supplier) {
-        return this;
+    public @NonNull Result<T, E> orElse(@NonNull Supplier<Result<T, E>> supplier) {
+        return new Ok<>(value);
     }
 
 
     @Override
     public @NonNull Option<T> ok() {
-        return Option.some(value);
+        return new Some<>(value);
     }
 
     @Override
     public @NonNull Option<E> err() {
-        return Option.none();
+        return new None<>();
+    }
+
+    @Override
+    public boolean contains(@NonNull T value) {
+        return Objects.equals(this.value, value);
+    }
+
+    @Override
+    public boolean containsErr(@NonNull E error) {
+        return false;
+    }
+
+    @Override
+    public @NonNull Result<T, E> inspect(@NonNull Consumer<T> consumer) {
+        consumer.accept(value);
+        return new Ok<>(value);
+    }
+
+    @Override
+    public @NonNull Result<T, E> inspectErr(@NonNull Consumer<E> consumer) {
+        return new Ok<>(value);
+    }
+
+    @Override
+    public @NonNull <U> Result<U, E> flatten() {
+        return (Result<U, E>) switch (value) {
+            case Ok<?, ?> ok -> new Ok<>(ok.value);
+            case Err<?, ?> err -> new Err<>(err.error());
+            default -> new Ok<>(value); //If this is not a nested result
+        };
+
+    }
+
+    @Override
+    public @NonNull <U> Result<Pair<T, U>, E> zip(@NonNull Result<U, E> other) {
+        return switch (other){
+            case Ok<U, E> ok -> new Ok<>(new Pair<>(value, ok.value));
+            case Err<U, E> err -> new Err<>(err.error());
+        };
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public @NonNull <U, R> Result<R, E> zipWith(@NonNull Result<U, E> other, @NonNull BiFunction<T, U, R> fn) {
+        return switch (other){
+            case Ok<U, E> ok -> {
+                var val = fn.apply(value, ok.value);
+                yield val == null ? (Result<R, E>)  new Ok<>(value) : new Ok<>(val);
+            }
+            case Err<U, E> err -> new Err<>(err.error());
+        };
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public @NonNull <U> Option<Result<U, E>> transpose() {
+        var option = (Option<U>) this.value;
+        return switch (option) {
+            case Some<U> some -> new Some<>(new Ok<>(some.value()));
+            case None<?> _ -> new None<>();
+        };
+    }
+
+    @Override
+    public void ifOk(@NonNull Consumer<T> consumer) {
+        consumer.accept(value);
+    }
+
+    @Override
+    public void ifErr(@NonNull Consumer<E> consumer) {}
+
+    @Override
+    public void ifOkOrElse(@NonNull Consumer<T> onOk, @NonNull Consumer<E> onErr) {
+        onOk.accept(value);
+    }
+
+    @Override
+    public @NonNull Stream<T> stream() {
+        return Stream.of(value);
     }
 }
