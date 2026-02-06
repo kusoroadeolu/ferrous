@@ -26,7 +26,7 @@ public record Err<T, E>(@NonNull E error) implements Result<T, E> {
 
     @Override
     public @NonNull T unwrap() {
-        throw new ResultException("'unWrap' called on type 'err'");
+        throw new ResultException("unWrap() called on type 'err'");
     }
 
     @Override
@@ -96,7 +96,7 @@ public record Err<T, E>(@NonNull E error) implements Result<T, E> {
 
     @Override
     public @NonNull Option<E> err() {
-        return Option.some(error);
+        return new Some<>(error);
     }
 
     @Override
@@ -111,18 +111,13 @@ public record Err<T, E>(@NonNull E error) implements Result<T, E> {
 
     @Override
     public @NonNull Result<T, E> inspect(@NonNull Consumer<T> consumer) {
-        return new Err<>(error);
+        return this;
     }
 
     @Override
     public @NonNull Result<T, E> inspectErr(@NonNull Consumer<E> consumer) {
         consumer.accept(error);
-        return new Err<>(error);
-    }
-
-    @Override
-    public @NonNull <U> Result<U, E> flatten() {
-        return new Err<>(error);
+        return this;
     }
 
     @Override

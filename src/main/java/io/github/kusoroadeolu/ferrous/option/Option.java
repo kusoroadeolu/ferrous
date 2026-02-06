@@ -165,17 +165,6 @@ public sealed interface Option<T> permits None, Some {
     @NonNull
     Option<T> inspect(@NonNull Consumer<T> consumer);
 
-    /**
-     * Flattens a nested Option.
-     * For Some(Some(value)): returns Some(value)
-     * For Some(None): returns None
-     * For None: returns None
-     *
-     * @param <U> the type of the inner Option's value
-     * @return the flattened Option
-     */
-    @NonNull
-    <U> Option<U> flatten();
 
     /**
      * Combines this Option with another, returning Some only if both are Some.
@@ -291,7 +280,5 @@ public sealed interface Option<T> permits None, Some {
      */
     @NonNull
     Optional<T> toOptional();
-
-
 
 }

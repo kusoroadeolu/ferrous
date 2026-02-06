@@ -23,7 +23,7 @@ public record None<T>() implements Option<T> {
 
     @Override
     public @NonNull T unwrap() {
-        throw new OptionException("unwrap called on 'none' type");
+        throw new OptionException("unwrap() called on 'none' type");
     }
 
     @Override
@@ -42,18 +42,20 @@ public record None<T>() implements Option<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public @NonNull <U> Option<U> map(@NonNull Function<T, U> fn) {
-        return new None<>();
+        return (Option<U>) this;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public @NonNull <U> Option<U> flatMap(@NonNull Function<T, Option<U>> fn) {
-        return new None<>();
+        return (Option<U>) this;
     }
 
     @Override
     public @NonNull Option<T> filter(@NonNull Predicate<T> predicate) {
-        return new None<>();
+        return this;
     }
 
     @Override
@@ -62,8 +64,9 @@ public record None<T>() implements Option<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public @NonNull <U> Option<U> andThen(@NonNull Function<T, Option<U>> fn) {
-        return new None<>();
+        return (Option<U>) this;
     }
 
     @Override
@@ -90,22 +93,19 @@ public record None<T>() implements Option<T> {
 
     @Override
     public @NonNull Option<T> inspect(@NonNull Consumer<T> consumer) {
-        return new None<>();
+        return this;
     }
 
     @Override
-    public @NonNull <U> Option<U> flatten() {
-        return new None<>();
-    }
-
-    @Override
+    @SuppressWarnings("unchecked")
     public @NonNull <U> Option<Pair<T, U>> zip(@NonNull Option<U> other) {
-        return new None<>();
+        return (Option<Pair<T,U>>) this;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public @NonNull <U, R> Option<R> zipWith(@NonNull Option<U> other, @NonNull BiFunction<T, U, R> fn) {
-        return new None<>();
+        return (Option<R>) this;
     }
 
     @Override
@@ -119,19 +119,18 @@ public record None<T>() implements Option<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public @NonNull <U, E> Result<Option<U>, E> transpose() {
-        return new Ok<>(new None<>());
+        return new Ok<>((Option<U>) this);
     }
 
     @Override
     public @NonNull Option<T> xor(@NonNull Option<T> other) {
-        return new None<>();
+        return other;
     }
 
     @Override
-    public void ifSome(@NonNull Consumer<T> consumer) {
-
-    }
+    public void ifSome(@NonNull Consumer<T> consumer) {}
 
     @Override
     public void ifNone(@NonNull Runnable runnable) {

@@ -56,7 +56,7 @@ public record Some<T>(T value) implements Option<T> {
 
     @Override
     public @NonNull Option<T> filter(@NonNull Predicate<T> predicate) {
-        return predicate.test(value) ? new Some<>(value) : new None<>();
+        return predicate.test(value) ? this : new None<>();
     }
 
     @Override
@@ -65,18 +65,19 @@ public record Some<T>(T value) implements Option<T> {
     }
 
     @Override
-    public @NonNull <U> Option<U> andThen(Function<T, Option<U>> fn) {
-        return fn.apply(value);
+    public @NonNull <U> Option<U> andThen(@NonNull Function<T, Option<U>> fn) {
+        var val = fn.apply(value);
+        return val == null ? new None<>() : val;
     }
 
     @Override
     public @NonNull Option<T> or(@NonNull Option<T> other) {
-        return new Some<>(value);
+        return this;
     }
 
     @Override
     public @NonNull Option<T> orElse(@NonNull Supplier<Option<T>> supplier) {
-        return new Some<>(value);
+        return this;
     }
 
     @Override
@@ -92,16 +93,7 @@ public record Some<T>(T value) implements Option<T> {
     @Override
     public @NonNull Option<T> inspect(@NonNull Consumer<T> consumer) {
         consumer.accept(value);
-        return new Some<>(value);
-    }
-
-    @Override
-    public @NonNull <U> Option<U> flatten() {
-        return (Option<U>) switch (value) {
-            case Some<?> some -> some;
-            case None<?> _ -> new None<>();
-            default -> new Some<>(value); //If this is not a nested result
-        };
+        return this;
     }
 
     @Override
@@ -117,7 +109,11 @@ public record Some<T>(T value) implements Option<T> {
     @Override
     public @NonNull <U, R> Option<R> zipWith(@NonNull Option<U> other, @NonNull BiFunction<T, U, R> fn) {
         return switch (other){
-            case Some<U> some -> new Some<>(fn.apply(value, some.value));
+            case Some<U> some -> {
+                var val = fn.apply(value, some.value);
+                if (val == null) yield new None<>();
+                else yield new Some<>(val);
+            }
             case None<U> _ -> new None<>();
         };
     }
@@ -145,7 +141,7 @@ public record Some<T>(T value) implements Option<T> {
 
     @Override
     public @NonNull Option<T> xor(@NonNull Option<T> other) {
-        return new Some<>(value);
+        return this;
     }
 
     @Override

@@ -31,7 +31,7 @@ public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
 
     @Override
     public @NonNull E unwrapErr() {
-        throw new ResultException("'unwrapErr' called on type 'ok'");
+        throw new ResultException("unwrapErr() called on type 'ok'");
     }
 
     @Override
@@ -56,7 +56,7 @@ public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
 
     @Override
     public @NonNull <U> Result<U, E> map(@NonNull Function<T, U> fn) {
-        return new Ok<>(fn.apply(value));
+         return new Ok<>(fn.apply(value));
     }
 
     @Override
@@ -81,12 +81,12 @@ public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
 
     @Override
     public @NonNull Result<T, E> or(@NonNull Result<T, E> other) {
-        return new Ok<>(value);
+        return this;
     }
 
     @Override
     public @NonNull Result<T, E> orElse(@NonNull Supplier<Result<T, E>> supplier) {
-        return new Ok<>(value);
+        return this;
     }
 
 
@@ -113,22 +113,12 @@ public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
     @Override
     public @NonNull Result<T, E> inspect(@NonNull Consumer<T> consumer) {
         consumer.accept(value);
-        return new Ok<>(value);
+        return this;
     }
 
     @Override
     public @NonNull Result<T, E> inspectErr(@NonNull Consumer<E> consumer) {
-        return new Ok<>(value);
-    }
-
-    @Override
-    public @NonNull <U> Result<U, E> flatten() {
-        return (Result<U, E>) switch (value) {
-            case Ok<?, ?> ok -> new Ok<>(ok.value);
-            case Err<?, ?> err -> new Err<>(err.error());
-            default -> new Ok<>(value); //If this is not a nested result
-        };
-
+        return this;
     }
 
     @Override
@@ -140,24 +130,18 @@ public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public @NonNull <U, R> Result<R, E> zipWith(@NonNull Result<U, E> other, @NonNull BiFunction<T, U, R> fn) {
         return switch (other){
-            case Ok<U, E> ok -> {
-                var val = fn.apply(value, ok.value);
-                yield val == null ? (Result<R, E>)  new Ok<>(value) : new Ok<>(val);
-            }
+            case Ok<U, E> ok -> new Ok<>(fn.apply(value, ok.value));
             case Err<U, E> err -> new Err<>(err.error());
         };
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public @NonNull <U> Option<Result<U, E>> transpose() {
-        var option = (Option<U>) this.value;
-        return switch (option) {
-            case Some<U> some -> new Some<>(new Ok<>(some.value()));
-            case None<?> _ -> new None<>();
+        return (Option<Result<U,E>>) switch (this.value) {
+            case Some<?> some -> new Some<>(new Ok<>(some.value()));
+            default -> new None<>();
         };
     }
 

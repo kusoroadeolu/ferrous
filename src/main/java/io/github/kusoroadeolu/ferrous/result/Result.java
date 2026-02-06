@@ -267,18 +267,6 @@ public sealed interface Result<T, E> permits Ok, Err {
     Result<T, E> inspectErr(@NonNull Consumer<E> consumer);
 
     /**
-     * Flattens a nested Result where both have the same error type.
-     * For Ok(Ok(value)): returns Ok(value)
-     * For Ok(Err(error)): returns Err(error)
-     * For Err(error): returns Err(error)
-     *
-     * @param <U> the type of the inner Result's Ok value
-     * @return the flattened Result
-     */
-    @NonNull
-    <U> Result<U, E> flatten();
-
-    /**
      * Combines this Result with another, returning Ok only if both are Ok.
      * For Ok(a) and Ok(b): returns Ok(Pair(a, b))
      * For any Err: returns the first Err encountered
