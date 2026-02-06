@@ -72,7 +72,7 @@ public sealed interface Option<T> permits None, Some {
      * @param
      */
     @NonNull
-    T unwrapOrElse(@NonNull Supplier<T> supplier);
+    T unwrapOrElse(@NonNull Supplier<@NonNull T> supplier);
     
     /**
      * Returns the wrapped value if Some, throws OptionException with custom message if None
@@ -88,7 +88,7 @@ public sealed interface Option<T> permits None, Some {
      * If None, returns None.
      */
     @NonNull
-    <U> Option<U> map(@NonNull Function<T, U> fn);
+    <U> Option<U> map(@NonNull Function<T, @NonNull U> fn);
     
     /**
      * If Some, applies fn to the wrapped value (fn returns an Option) and returns that Option.
@@ -96,7 +96,7 @@ public sealed interface Option<T> permits None, Some {
      * Used for chaining operations that might not produce a value.
      */
     @NonNull
-    <U> Option<U> flatMap(@NonNull Function<T, Option<U>> fn);
+    <U> Option<U> flatMap(@NonNull Function<T, @NonNull Option<U>> fn);
     
     /**
      * If Some and predicate returns true for the value, returns Some.
@@ -190,7 +190,7 @@ public sealed interface Option<T> permits None, Some {
      * @return Some with combined value if both are Some, None otherwise
      */
     @NonNull
-    <U, R> Option<R> zipWith(@NonNull Option<U> other, @NonNull BiFunction<T, U, R> fn);
+    <U, R> Option<R> zipWith(@NonNull Option<U> other, @NonNull BiFunction<T, @NonNull U, @NonNull R> fn);
 
     /**
      * Converts this Option to a Result.
@@ -214,7 +214,7 @@ public sealed interface Option<T> permits None, Some {
      * @return Ok if Some, Err with the supplied error if None
      */
     @NonNull
-    <E> Result<T, E> okOrElse(@NonNull Supplier<E> supplier);
+    <E> Result<T, E> okOrElse(@NonNull Supplier<@NonNull E> supplier);
 
     /**
      * Transposes an Option of a Result into a Result of an Option.

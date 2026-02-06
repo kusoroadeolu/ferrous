@@ -24,7 +24,7 @@ class NoneTest {
         @Test
         public void shouldReturnFalse_onIsNone(){
             Option<String> opt = Option.none();
-            assertTrue(opt.isSome());
+            assertTrue(opt.isNone());
         }
 
         @Test

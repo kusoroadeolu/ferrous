@@ -101,9 +101,9 @@ public sealed interface Result<T, E> permits Ok, Err {
      */
     @NonNull
     static <T, R, E> Result<R, E> catching(
-            @NonNull ThrowingFunction<T, R> fn,
+            @NonNull ThrowingFunction<T, @NonNull R> fn,
             @NonNull T input,
-            @NonNull Function<Exception, E> errorMapper
+            @NonNull Function<Exception, @NonNull E> errorMapper
     ){
         try {
             return new Ok<>(fn.apply(input));
@@ -145,7 +145,7 @@ public sealed interface Result<T, E> permits Ok, Err {
      * Returns the wrapped value if Ok, calls supplier and returns its value if Err
      */
     @NonNull
-    T unwrapOrElse(@NonNull Supplier<T> supplier);
+    T unwrapOrElse(@NonNull Supplier<@NonNull T> supplier);
 
     /**
      * Returns the wrapped value if Ok, throws ResultException with custom message if Err
@@ -168,14 +168,14 @@ public sealed interface Result<T, E> permits Ok, Err {
      * If Err, returns Err unchanged.
      */
     @NonNull
-    <U> Result<U, E> map(@NonNull Function<T, U> fn);
+    <U> Result<U, E> map(@NonNull Function<T, @NonNull U> fn);
 
     /**
      * If Err, applies fn to the wrapped error and returns Err with the result.
      * If Ok, returns Ok unchanged.
      */
     @NonNull
-    <F> Result<T, F> mapErr(@NonNull Function<E, F> fn);
+    <F> Result<T, F> mapErr(@NonNull Function<E, @NonNull F> fn);
 
     /**
      * If Ok, applies fn to the wrapped value (fn returns a Result) and returns that Result.
@@ -183,7 +183,7 @@ public sealed interface Result<T, E> permits Ok, Err {
      * Used for chaining operations that can fail.
      */
     @NonNull
-    <U> Result<U, E> flatMap(@NonNull Function<T, Result<U, E>> fn);
+    <U> Result<U, E> flatMap(@NonNull Function<T, @NonNull Result<U, E>> fn);
 
     // Combinators
 
@@ -200,7 +200,7 @@ public sealed interface Result<T, E> permits Ok, Err {
      * Similar to flatMap but more explicit about chaining.
      */
     @NonNull
-    <U> Result<U, E> andThen(@NonNull Function<T, Result<U, E>> fn);
+    <U> Result<U, E> andThen(@NonNull Function<T, @NonNull Result<U, E>> fn);
 
     /**
      * If Ok, returns this Ok. If Err, returns other.
@@ -214,7 +214,7 @@ public sealed interface Result<T, E> permits Ok, Err {
      * Lazy version of or().
      */
     @NonNull
-    Result<T, E> orElse(@NonNull Supplier<Result<T, E>> supplier);
+    Result<T, E> orElse(@NonNull Supplier<@NonNull Result<T, E>> supplier);
 
 
     @NonNull Option<T> ok();
@@ -290,7 +290,7 @@ public sealed interface Result<T, E> permits Ok, Err {
      * @return Ok with combined value if both are Ok, otherwise the first Err
      */
     @NonNull
-    <U, R> Result<R, E> zipWith(@NonNull Result<U, E> other, @NonNull BiFunction<T, U, R> fn);
+    <U, R> Result<R, E> zipWith(@NonNull Result<U, E> other, @NonNull BiFunction<T, @NonNull U, @NonNull R> fn);
 
     /**
      * Transposes a Result of an Option into an Option of a Result.

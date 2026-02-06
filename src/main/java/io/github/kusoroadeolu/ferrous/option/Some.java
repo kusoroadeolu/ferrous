@@ -33,7 +33,7 @@ public record Some<T>(T value) implements Option<T> {
     }
 
     @Override
-    public @NonNull T unwrapOrElse(@NonNull Supplier<T> supplier) {
+    public @NonNull T unwrapOrElse(@NonNull Supplier<@NonNull T> supplier) {
         return value;
     }
 
@@ -43,15 +43,13 @@ public record Some<T>(T value) implements Option<T> {
     }
 
     @Override
-    public @NonNull <U> Option<U> map(@NonNull Function<T, U> fn) {
-        var val = fn.apply(value);
-        return val == null ? new None<>() : new Some<>(val);
+    public @NonNull <U> Option<U> map(@NonNull Function<T, @NonNull U> fn) {
+        return new Some<>(fn.apply(value));
     }
 
     @Override
-    public @NonNull <U> Option<U> flatMap(@NonNull Function<T, Option<U>> fn) {
-        var val = fn.apply(value);
-        return val == null ? new None<>() : val;
+    public @NonNull <U> Option<U> flatMap(@NonNull Function<T, @NonNull Option<U>> fn) {
+        return fn.apply(value);
     }
 
     @Override
@@ -65,9 +63,8 @@ public record Some<T>(T value) implements Option<T> {
     }
 
     @Override
-    public @NonNull <U> Option<U> andThen(@NonNull Function<T, Option<U>> fn) {
-        var val = fn.apply(value);
-        return val == null ? new None<>() : val;
+    public @NonNull <U> Option<U> andThen(@NonNull Function<T, @NonNull Option<U>> fn) {
+        return this.flatMap(fn);
     }
 
     @Override
@@ -76,7 +73,7 @@ public record Some<T>(T value) implements Option<T> {
     }
 
     @Override
-    public @NonNull Option<T> orElse(@NonNull Supplier<Option<T>> supplier) {
+    public @NonNull Option<T> orElse(@NonNull Supplier<@NonNull Option<T>> supplier) {
         return this;
     }
 
@@ -97,23 +94,20 @@ public record Some<T>(T value) implements Option<T> {
     }
 
     @Override
-    public @NonNull <U> Option<Pair<T, U>> zip(@NonNull Option<U> other) {
-        final var pair = switch (other){
-            case Some<U> some -> new Pair<>(value, some.value);
-            case None<U> _ -> null;
+    public @NonNull <U> Option<@NonNull Pair<T, U>> zip(@NonNull Option<U> other) {
+        return switch (other){
+            case Some<U> some -> {
+                var pair = new Pair<>(value, some.value);
+                yield new Some<>(pair);
+            }
+            case None<U> _ -> new None<>();
         };
-
-        return pair == null ? new None<>() : new Some<>(pair);
     }
 
     @Override
-    public @NonNull <U, R> Option<R> zipWith(@NonNull Option<U> other, @NonNull BiFunction<T, U, R> fn) {
+    public @NonNull <U, R> Option<R> zipWith(@NonNull Option<U> other, @NonNull BiFunction<T, @NonNull U, @NonNull R> fn) {
         return switch (other){
-            case Some<U> some -> {
-                var val = fn.apply(value, some.value);
-                if (val == null) yield new None<>();
-                else yield new Some<>(val);
-            }
+            case Some<U> some -> new Some<>(fn.apply(value, some.value));
             case None<U> _ -> new None<>();
         };
     }
@@ -124,7 +118,7 @@ public record Some<T>(T value) implements Option<T> {
     }
 
     @Override
-    public @NonNull <E> Result<T, E> okOrElse(@NonNull Supplier<E> supplier) {
+    public @NonNull <E> Result<T, E> okOrElse(@NonNull Supplier<@NonNull E> supplier) {
         return new Ok<>(value);
     }
 

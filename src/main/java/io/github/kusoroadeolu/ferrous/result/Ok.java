@@ -40,7 +40,7 @@ public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
     }
 
     @Override
-    public @NonNull T unwrapOrElse(@NonNull Supplier<T> supplier) {
+    public @NonNull T unwrapOrElse(@NonNull Supplier<@NonNull T> supplier) {
         return value;
     }
 
@@ -55,17 +55,17 @@ public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
     }
 
     @Override
-    public @NonNull <U> Result<U, E> map(@NonNull Function<T, U> fn) {
+    public @NonNull <U> Result<U, E> map(@NonNull Function<T, @NonNull U> fn) {
          return new Ok<>(fn.apply(value));
     }
 
     @Override
-    public @NonNull <F> Result<T, F> mapErr(@NonNull Function<E, F> fn) {
+    public @NonNull <F> Result<T, F> mapErr(@NonNull Function<E, @NonNull F> fn) {
         return new Ok<>(value);
     }
 
     @Override
-    public @NonNull <U> Result<U, E> flatMap(@NonNull Function<T, Result<U, E>> fn) {
+    public @NonNull <U> Result<U, E> flatMap(@NonNull Function<T, @NonNull Result<U, E>> fn) {
         return fn.apply(value);
     }
 
@@ -75,7 +75,7 @@ public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
     }
 
     @Override
-    public @NonNull <U> Result<U, E> andThen(@NonNull Function<T, Result<U, E>> fn) {
+    public @NonNull <U> Result<U, E> andThen(@NonNull Function<T, @NonNull Result<U, E>> fn) {
         return this.flatMap(fn);
     }
 
@@ -85,7 +85,7 @@ public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
     }
 
     @Override
-    public @NonNull Result<T, E> orElse(@NonNull Supplier<Result<T, E>> supplier) {
+    public @NonNull Result<T, E> orElse(@NonNull Supplier<@NonNull Result<T, E>> supplier) {
         return this;
     }
 
@@ -130,7 +130,7 @@ public record Ok<T, E>(@NonNull T value) implements Result<T, E> {
     }
 
     @Override
-    public @NonNull <U, R> Result<R, E> zipWith(@NonNull Result<U, E> other, @NonNull BiFunction<T, U, R> fn) {
+    public @NonNull <U, R> Result<R, E> zipWith(@NonNull Result<U, E> other, @NonNull BiFunction<T, @NonNull U, @NonNull R> fn) {
         return switch (other){
             case Ok<U, E> ok -> new Ok<>(fn.apply(value, ok.value));
             case Err<U, E> err -> new Err<>(err.error());
