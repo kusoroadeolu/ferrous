@@ -1,0 +1,37 @@
+name: Generate and Deploy Javadoc
+
+on:
+  push:
+    branches: [ main, master ]  # Trigger on pushes to main or master
+  workflow_dispatch:  # Allow manual trigger from Actions tab
+
+permissions:
+  contents: write  # Needed to push to gh-pages branch
+
+jobs:
+  javadoc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Generate Javadoc
+        run: mvn javadoc:javadoc -DskipTests
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/site/apidocs
+          destination_dir: .
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy Javadoc to GitHub Pages'
