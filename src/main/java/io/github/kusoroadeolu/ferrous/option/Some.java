@@ -3,6 +3,7 @@ package io.github.kusoroadeolu.ferrous.option;
 import io.github.kusoroadeolu.ferrous.result.Err;
 import io.github.kusoroadeolu.ferrous.result.Ok;
 import io.github.kusoroadeolu.ferrous.result.Result;
+import io.github.kusoroadeolu.ferrous.utils.Utils;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
@@ -10,7 +11,13 @@ import java.util.Optional;
 import java.util.function.*;
 import java.util.stream.Stream;
 
-public record Some<T>(T value) implements Option<T> {
+import static java.util.Objects.isNull;
+
+public record Some<T>(@NonNull T value) implements Option<T> {
+
+    public Some{
+        Utils.throwIfNull(value);
+    }
 
     @Override
     public boolean isSome() {
@@ -100,7 +107,7 @@ public record Some<T>(T value) implements Option<T> {
                 var pair = new Pair<>(value, some.value);
                 yield new Some<>(pair);
             }
-            case None<U> _ -> new None<>();
+            case None<U> n -> new None<>();
         };
     }
 
@@ -108,7 +115,7 @@ public record Some<T>(T value) implements Option<T> {
     public @NonNull <U, R> Option<R> zipWith(@NonNull Option<U> other, @NonNull BiFunction<T, @NonNull U, @NonNull R> fn) {
         return switch (other){
             case Some<U> some -> new Some<>(fn.apply(value, some.value));
-            case None<U> _ -> new None<>();
+            case None<U> n -> new None<>();
         };
     }
 

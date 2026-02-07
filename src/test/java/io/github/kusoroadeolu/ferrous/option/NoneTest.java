@@ -68,7 +68,7 @@ class NoneTest {
         @Test
         public void shouldReturnNone_whenFlatMapping(){
             Option<String> opt = Option.some("String");
-            Option<String> val = Option.none().flatMap(_ -> opt);
+            Option<String> val = Option.none().flatMap(s -> opt);
             assertInstanceOf(None.class, val);
         }
 
@@ -88,7 +88,7 @@ class NoneTest {
         @Test
         public void shouldReturnNone_onAndThen(){
             Option<String> some = new Some<>("some_value");
-            Option<String> val = new None<String>().andThen(_ -> some);
+            Option<String> val = new None<String>().andThen(s -> some);
             assertInstanceOf(None.class, val);
         }
 
@@ -145,7 +145,7 @@ class NoneTest {
         @Test
         public void shouldNotConsumeValue_onIfSome(){
             List<Integer> ls = new ArrayList<>();
-            Option.none().ifSome(_ -> ls.add(1));
+            Option.none().ifSome(s -> ls.add(1));
             assertEquals(0, ls.size());
         }
 

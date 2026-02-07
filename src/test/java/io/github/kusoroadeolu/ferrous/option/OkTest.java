@@ -99,7 +99,7 @@ class OkTest {
         @Test
         public void shouldReturnErr_whenFlatMappingReturnsErr() {
             Result<Integer, String> result = Result.<String, String>ok("hello")
-                .flatMap(_ -> Result.err("error"));
+                .flatMap(s -> Result.err("error"));
             assertInstanceOf(Err.class, result);
             assertEquals("error", result.unwrapErr());
         }
@@ -135,7 +135,7 @@ class OkTest {
         @Test
         public void shouldReturnErr_onAndThenReturningErr() {
             Result<Integer, String> result = Result.<String, String>ok("hello")
-                .andThen(_ -> Result.err("error"));
+                .andThen(s -> Result.err("error"));
             assertInstanceOf(Err.class, result);
             assertEquals("error", result.unwrapErr());
         }

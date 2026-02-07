@@ -4,6 +4,7 @@ import io.github.kusoroadeolu.ferrous.option.None;
 import io.github.kusoroadeolu.ferrous.option.Option;
 import io.github.kusoroadeolu.ferrous.option.Pair;
 import io.github.kusoroadeolu.ferrous.option.Some;
+import io.github.kusoroadeolu.ferrous.utils.Utils;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
@@ -14,6 +15,11 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public record Err<T, E>(@NonNull E error) implements Result<T, E> {
+
+    public Err{
+        Utils.throwIfNull(error);
+    }
+
     @Override
     public boolean isOk() {
         return false;

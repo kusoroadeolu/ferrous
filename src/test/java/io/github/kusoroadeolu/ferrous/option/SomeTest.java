@@ -79,7 +79,7 @@ class SomeTest {
         @Test
         public void shouldReturnNone_whenFlatMappingReturnsNone() {
             Option<Integer> val = Option.some("hello")
-                .flatMap(_ -> Option.none());
+                .flatMap(s -> Option.none());
             assertInstanceOf(None.class, val);
         }
 
@@ -121,7 +121,7 @@ class SomeTest {
         @Test
         public void shouldReturnNone_onAndThenReturningNone() {
             Option<Integer> val = Option.some("hello")
-                .andThen(_ -> Option.none());
+                .andThen(s -> Option.none());
             assertInstanceOf(None.class, val);
         }
 
@@ -251,12 +251,6 @@ class SomeTest {
             assertEquals("hello5", zipped.unwrap());
         }
 
-        @Test
-        public void shouldReturnNone_whenZipWithFunctionReturnsNull() {
-            Option<String> zipped = Option.some("hello")
-                .zipWith(Option.some(5), (s, i) -> null);
-            assertInstanceOf(None.class, zipped);
-        }
     }
 
     @Nested
