@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"io.github.kusoroadeolu.ferrous.option"},{"l":"io.github.kusoroadeolu.ferrous.result"},{"l":"io.github.kusoroadeolu.ferrous.throwing"},{"l":"io.github.kusoroadeolu.ferrous.utils"}];updateSearchResults();
